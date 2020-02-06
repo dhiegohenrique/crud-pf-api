@@ -17,7 +17,7 @@ const update = (Model, item) => {
         } else {
           let newModel = new Model(currentItem)
           newModel = await newModel.save()
-          newItems.push(newModel)
+          newItems.push(newModel._id)
         }
 
         if (index === (item.length - 1)) {
@@ -31,7 +31,7 @@ const update = (Model, item) => {
 }
 
 const get = (Model, query) => {
-  return Model.find(query).sort({ title: 1 })
+  return Model.find(query)
 }
 
 const getById = (Model, _id) => {
@@ -39,11 +39,21 @@ const getById = (Model, _id) => {
 }
 
 const insert = (Model, item) => {
-  return new Promise(async (resolve, reject) => {
+  return new Promise((resolve, reject) => {
     try {
-      item = new Model(item)
-      item = await item.save()
-      resolve(item._id)
+      if (!Array.isArray(item)) {
+        item = [item]
+      }
+
+      Model.collection.insertMany(item)
+        .then((res) => {
+          const insertedIds = res.insertedIds
+          const arrayIds = []
+          Object.keys(insertedIds).forEach((key) => {
+            arrayIds.push(insertedIds[key])
+          })
+          resolve(arrayIds)
+        })
     } catch (error) {
       reject(error)
     }
@@ -51,7 +61,11 @@ const insert = (Model, item) => {
 }
 
 const deleteItem = (Model, _id) => {
-  return Model.findOneAndRemove(_id)
+  if (!Array.isArray(_id)) {
+    _id = [_id]
+  }
+
+  return Model.remove({ '_id': { $in: _id } })
 }
 
 module.exports = {
