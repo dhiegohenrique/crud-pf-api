@@ -1,8 +1,6 @@
 const mongoose = require('mongoose')
 const cpfGenerator = require('@fnando/cpf/dist/node')
 const validator = require('validator')
-const moment = require('moment-timezone')
-moment.tz.setDefault('America/Sao_Paulo')
 
 const personSchema = new mongoose.Schema({
   name: {
@@ -25,20 +23,25 @@ const personSchema = new mongoose.Schema({
   },
   creationDate: {
     type: Date,
-    default: moment()
+    required: true
   },
   address: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Address'
+      ref: 'Address',
+      required: true
     }
   ],
   contact: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Contact'
+      ref: 'Contact',
+      required: true
     }
   ]
+},{
+  collection: 'people',
+  timestamps: true
 })
 
 personSchema.path('cpf').validate((cpf) => {

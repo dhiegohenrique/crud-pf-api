@@ -46,7 +46,7 @@ const routes = [
           contact: {
             type: 'array',
             items: {
-              type: 'object',
+              type: 'string',
               properties: {
                 cellphone: { type: 'string' }
               }
@@ -59,7 +59,7 @@ const routes = [
           description: 'Pessoa inserida com sucesso.',
           type: 'object',
           properties: {
-            id: { type: 'string' }
+            _id: { type: 'string' }
           }
         }
       }
@@ -119,6 +119,12 @@ const routes = [
     handler: personController.getById,
     schema: {
       summary: 'Retornar uma pessoa',
+      params: {
+        type: 'object',
+        properties: {
+          id: { type: 'string' }
+        }
+      },
       response: {
         200: {
           description: 'Pessoa retornada com sucesso.',
@@ -177,7 +183,7 @@ const routes = [
             items: {
               type: 'object',
               properties: {
-                id: { type: 'string', nullable: true },
+                _id: { type: 'string' },
                 street: { type: 'string' },
                 cep: { type: 'string' },
                 neighborhood: { type: 'string' },
@@ -191,7 +197,7 @@ const routes = [
             items: {
               type: 'object',
               properties: {
-                id: { type: 'string', nullable: true },
+                _id: { type: 'string' },
                 cellphone: { type: 'string' }
               }
             }
@@ -216,7 +222,7 @@ const routes = [
     schema: {
       summary: 'Excluir uma pessoa',
       params: {
-        type: 'string',
+        type: 'object',
         properties: {
           id: { type: 'string' }
         }

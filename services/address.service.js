@@ -2,17 +2,58 @@ const Address = require('../models/Address')
 const baseService = require('./base.service')
 const cepPromise = require('cep-promise')
 const stateService = require('./state.service')
+const ObjectId = require('mongodb').ObjectID
 
 const update = (address) => {
-  return baseService.update(Address, address)
+  return new Promise(async (resolve) => {
+    if (!Array.isArray(address)) {
+      address = [address]
+    }
+
+    address.forEach(async (currentAddress, index) => {
+      let uf = currentAddress.uf
+      if (uf) {
+        uf = await stateService.getId(uf)
+        uf = new ObjectId(uf)
+        currentAddress.uf = uf
+      }
+
+      if (index === (address.length - 1)) {
+        const res = await baseService.update(Address, address)
+        resolve(res)
+      }
+    })
+  })
 }
 
 const get = (query) => {
   return baseService.get(Address, query)
 }
 
+const getById = (_id) => {
+  return baseService.getById(Address, _id)
+}
+
 const insert = (address) => {
-  return baseService.insert(Address, address)
+  return new Promise((resolve) => {
+    if (!Array.isArray(address)) {
+      address = [address]
+    }
+
+    address.forEach(async (currentAddress, index) => {
+      let uf = currentAddress.uf
+      if (uf) {
+        uf = await stateService.getId(uf)
+        uf = new ObjectId(uf)
+        currentAddress.uf = uf
+      }
+
+      if (index === (address.length - 1)) {
+        const res = await baseService.insert(Address, address)
+        resolve(res)
+      }
+    })
+  })
 }
 
 const deleteItem = (_id) => {
@@ -91,5 +132,6 @@ module.exports = {
   get,
   insert,
   deleteItem,
-  validate
+  validate,
+  getById
 }

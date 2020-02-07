@@ -31,11 +31,11 @@ const update = (Model, item) => {
 }
 
 const get = (Model, query) => {
-  return Model.find(query)
+  return Model.find(query).sort({ creationDate: -1 })
 }
 
-const getById = (Model, _id) => {
-  return Model.findById(_id)
+const getById = (Model, _id, populate = []) => {
+  return Model.findById(_id).populate(populate)
 }
 
 const insert = (Model, item) => {
