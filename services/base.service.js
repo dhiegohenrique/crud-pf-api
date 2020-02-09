@@ -6,7 +6,6 @@ const update = (Model, item) => {
       }
 
       const newItems = await updateOrInsert(Model, item)
-      await deleteRemainingItems(Model, item)
       resolve(newItems)
     } catch (error) {
       reject(error)
@@ -28,7 +27,7 @@ const updateOrInsert = (Model, item) => {
       } else {
         let newModel = new Model(currentItem)
         newModel = await newModel.save()
-        currentItem._id = newModel._id
+        currentItem['_id'] = newModel._id
         newItems.push(newModel._id)
       }
 
@@ -39,15 +38,11 @@ const updateOrInsert = (Model, item) => {
   })
 }
 
-const deleteRemainingItems = (Model, item) => {
+const deleteRemainingItems = (Model, _ids) => {
   return new Promise((resolve) => {
-    const ids = item.map((currentItem) => {
-      return currentItem._id
-    })
-
-    Model.deleteMany({ _id: { $nin: ids } })
-      .then(() => {
-        resolve()
+    Model.deleteMany({ _id: { $nin: _ids } })
+      .then((res) => {
+        resolve(res)
       })
   })
 }
@@ -95,5 +90,6 @@ module.exports = {
   get,
   insert,
   getById,
-  deleteItem
+  deleteItem,
+  deleteRemainingItems
 }
